@@ -1,10 +1,10 @@
 package kvu.apidemo;
 
 import java.time.Instant;
-import java.time.temporal.Temporal;
 
 
 /**
+ * 
  * @author VuKD
  */
 public class Item {

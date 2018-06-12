@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.List;
 
 @RestController
 @RequestMapping("items")
@@ -19,24 +18,14 @@ public class ItemRestController {
         this.repository = itemRepository;
     }
 
-    /*
-    @RequestMapping("/items")
-    public Item greeting(@RequestParam(value = "items", defaultValue = "123") String item) {
-        return new Item(counter.incrementAndGet());
-    }*/
-
     @PostMapping
-    //@RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Item> create(@RequestBody (required = false) Item item) {
-            item = repository.create(new Item());
-        return new ResponseEntity<Item>(item, HttpStatus.CREATED);
+    public ResponseEntity<Item> create() {
+        return new ResponseEntity<>(repository.create(new Item()), HttpStatus.CREATED);
     }
 
     @GetMapping
-    //@RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Collection<Item>> getItems() {
-        List<Item> items = repository.getItems();
-        return new ResponseEntity<Collection<Item>>(items, HttpStatus.OK);
+        return new ResponseEntity<>(repository.getItems(), HttpStatus.OK);
     }
 
 }
