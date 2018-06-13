@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ItemRestControllerTests {
 
-    private static final int NUM_ITEMS = 20000;
+    private static final int NUM_ITEMS = 120;
 
     @Autowired
     private WebApplicationContext context;
@@ -55,7 +55,7 @@ public class ItemRestControllerTests {
         this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
     }
 
-    @Test
+    //@Test
     public void testA_Get() throws Exception {
         this.mvc.perform(get("/items").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -63,7 +63,7 @@ public class ItemRestControllerTests {
     }
 
     // ================== Create 1 Item ==================
-    @Test
+    //@Test
     public void testB_PostOne() throws Exception {
         this.mvc.perform(post("/items")).andExpect(status().isCreated())
                 .andExpect(jsonPath("id", equalTo(1)))
@@ -80,22 +80,54 @@ public class ItemRestControllerTests {
     }
 
     // ================== Get All Items ==================
-    @Test //todo
+    //@Test //todo
     public void testD_Get() throws Exception {
         this.mvc.perform(get("/items")).andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()));
     }
-    
-    //@Test
-    public void testE_getItems() throws Exception {
-        List<Item>aList = new ArrayList<>();
+
+
+    // ================== Get the last 100 POSTed Items ==================
+    @Test
+    public void testE_getLastPOSTedBySize() throws Exception {
+
+        assert(NUM_ITEMS > ItemRepository.RECENT_POSTED_SIZE);  //test with a number > 100
+
+        List<Item>listOfAllItemsCreated = new ArrayList<>();
+        List<Item>listOfAllItemsDisplay = new ArrayList<>();
+
         ItemRepository ir = new ItemRepository();
         for (int i = 0; i < NUM_ITEMS; i++) {
-             ir.create(new Item());
+            listOfAllItemsCreated.add(ir.create(new Item()));
         }
-        aList.addAll(ir.getItems());
-        assertEquals(NUM_ITEMS, aList.size());
+        Thread.sleep(3000); // 2secs passed
+
+        listOfAllItemsDisplay.addAll(ir.getItems());
+
+        assertEquals(NUM_ITEMS, listOfAllItemsCreated.size());  //assert the number of items added
+        assertEquals(ItemRepository.RECENT_POSTED_SIZE, listOfAllItemsDisplay.size());  //assert the displayed items <=100
     }
+
+
+    // ================== Get the items POSTed in the last 2 seconds ==================
+    @Test
+    public void testF_getLastPOSTedByTime() throws Exception {
+        assert(NUM_ITEMS > ItemRepository.RECENT_POSTED_SIZE);  //test with a number > 100
+
+        List<Item>listOfAllItemsCreated = new ArrayList<>();
+        List<Item>listOfAllItemsDisplay = new ArrayList<>();
+
+        ItemRepository ir = new ItemRepository();
+        for (int i = 0; i < NUM_ITEMS; i++) {
+            listOfAllItemsCreated.add(ir.create(new Item()));
+        }
+
+        listOfAllItemsDisplay.addAll(ir.getItems());
+
+        assertEquals(NUM_ITEMS, listOfAllItemsCreated.size());
+        assertEquals(listOfAllItemsCreated.size(), listOfAllItemsDisplay.size());
+    }
+
     
     @Test
     public void test01() throws InterruptedException, ExecutionException {

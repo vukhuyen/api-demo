@@ -28,4 +28,8 @@ public class Item {
         this.timestamp = timestamp;
     }
 
+    public String toString(){
+        return "id: "+ id + ", timestamp: " + timestamp;
+    }
+
 }
